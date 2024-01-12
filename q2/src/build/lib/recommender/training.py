@@ -12,14 +12,14 @@ from recommender.data_processing import get_context, pad_list, map_column, MASK
 
 
 def mask_list(l1, p=0.8):
-    # 以0.8的概率保留原来的值，0.2的概率将其变为MASK(1)
+
     l1 = [a if random.random() < p else MASK for a in l1]
 
     return l1
 
 
 def mask_last_elements_list(l1, val_context_size: int = 5):
-    # 对最后val_context_size个元素进行mask
+
     l1 = l1[:-val_context_size] + mask_list(l1[-val_context_size:], p=0.5)
 
     return l1
@@ -68,18 +68,16 @@ def train(
     epochs: int = 2000,
     history_size: int = 120,
 ):
-    # 读入rating数据
     data = pd.read_csv(data_csv_path)
-    # 将数据按照timestamp排序
+
     data.sort_values(by="timestamp", inplace=True)
-    # 将movieId映射为新的列
+
     data, mapping, inverse_mapping = map_column(data, col_name="movieId")
-    # 将数据按照userId分组
+
     grp_by_train = data.groupby(by="userId")
-    # 将分组后的数据的索引转换为列表
+
     groups = list(grp_by_train.groups)
 
-    # 创建训练集和验证集
     train_data = Dataset(
         groups=groups,
         grp_by=grp_by_train,
@@ -108,17 +106,17 @@ def train(
         num_workers=10,
         shuffle=False,
     )
-    # 创建模型
+
     model = Recommender(
         vocab_size=len(mapping) + 2,
         lr=1e-4,
         dropout=0.3,
     )
-    # 创建tensorboard日志记录器
+
     logger = TensorBoardLogger(
         save_dir=log_dir,
     )
-    # 创建模型检查点回调
+
     checkpoint_callback = ModelCheckpoint(
         monitor="valid_loss",
         mode="min",
@@ -151,7 +149,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_csv_path")
-    parser.add_argument("--epochs", type=int, default=20)
+    parser.add_argument("--epochs", type=int, default=500)
     args = parser.parse_args()
 
     train(

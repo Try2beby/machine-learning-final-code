@@ -8,7 +8,6 @@ from torch.nn import functional as F
 
 
 def masked_accuracy(y_pred: torch.Tensor, y_true: torch.Tensor, mask: torch.Tensor):
-    # 考虑mask为1的位置，计算准确率
 
     _, predicted = torch.max(y_pred, 1)
 
@@ -21,10 +20,11 @@ def masked_accuracy(y_pred: torch.Tensor, y_true: torch.Tensor, mask: torch.Tens
 
 
 def masked_ce(y_pred, y_true, mask):
+
     loss = F.cross_entropy(y_pred, y_true, reduction="none")
 
     loss = loss * mask
-    # 返回mask上平均损失
+
     return loss.sum() / (mask.sum() + 1e-8)
 
 
@@ -45,26 +45,20 @@ class Recommender(pl.LightningModule):
 
         self.lr = lr
         self.dropout = dropout
-        # vocab_size 与电影的数量相关
         self.vocab_size = vocab_size
 
-        # 嵌入
         self.item_embeddings = torch.nn.Embedding(
             self.vocab_size, embedding_dim=channels
         )
 
-        # 位置嵌入
         self.input_pos_embedding = torch.nn.Embedding(512, embedding_dim=channels)
 
-        # 一层encode layer
         encoder_layer = nn.TransformerEncoderLayer(
             d_model=channels, nhead=4, dropout=self.dropout
         )
 
-        # 堆叠多层encode layer
         self.encoder = torch.nn.TransformerEncoder(encoder_layer, num_layers=6)
 
-        # 线性层,输出维度为vocab_size
         self.linear_out = Linear(channels, self.vocab_size)
 
         self.do = nn.Dropout(p=self.dropout)
@@ -72,7 +66,6 @@ class Recommender(pl.LightningModule):
     def encode_src(self, src_items):
         src_items = self.item_embeddings(src_items)
 
-        # 获取batch_size和in_sequence_len
         batch_size, in_sequence_len = src_items.size(0), src_items.size(1)
         pos_encoder = (
             torch.arange(0, in_sequence_len, device=src_items.device)
@@ -90,6 +83,7 @@ class Recommender(pl.LightningModule):
         return src.permute(1, 0, 2)
 
     def forward(self, src_items):
+
         src = self.encode_src(src_items)
 
         out = self.linear_out(src)

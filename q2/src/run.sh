@@ -1,0 +1,1 @@
+python3 recommender/training.py --data_csv_path /home/twh/code/machine-learning-final-code/q2/data/ml-25m/ratings.csv

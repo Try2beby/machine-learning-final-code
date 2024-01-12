@@ -1,0 +1,16 @@
+Metadata-Version: 2.1
+Name: recommender
+Version: 0.0.1
+Summary: recommender
+Home-page: https://github.com/CVxTz/recommender_transformer
+Author: Youness MANSAR
+Author-email: mansaryounessecp@gmail.com
+License: MIT
+Keywords: recommender
+Classifier: Development Status :: 3 - Alpha
+Classifier: Topic :: Utilities
+Classifier: License :: OSI Approved :: BSD License
+Requires-Dist: pandas==1.2.4
+Requires-Dist: pytorch_lightning==1.2.8
+Requires-Dist: numpy==1.19.2
+Requires-Dist: pytest==6.2.3
